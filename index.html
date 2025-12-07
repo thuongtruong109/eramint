@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>NFT Editor</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: Inter, sans-serif;
+        background: #0f0f0f;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      .container {
+        width: 420px;
+        padding: 24px;
+        background: rgba(255, 255, 255, 0.06);
+        border-radius: 20px;
+        backdrop-filter: blur(20px);
+        box-shadow: 0 0 40px rgba(0, 0, 0, 0.4);
+      }
+
+      h2 {
+        text-align: center;
+      }
+
+      .dropzone {
+        width: 100%;
+        height: 260px;
+        border: 2px dashed rgba(255, 255, 255, 0.3);
+        border-radius: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        transition: 0.25s;
+      }
+      .dropzone:hover {
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .dropzone.dragging {
+        border-color: #00eaff;
+        background: rgba(0, 255, 255, 0.08);
+      }
+
+      #preview {
+        margin-top: 20px;
+        width: 100%;
+        border-radius: 16px;
+      }
+
+      button {
+        width: 100%;
+        padding: 14px;
+        margin-top: 20px;
+        border: none;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #00eaff, #0066ff);
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+      button:hover {
+        transform: scale(1.03);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>NFT Editor</h2>
+
+      <div class="dropzone" id="dropzone">
+        <p>Kéo ảnh vào đây hoặc bấm để chọn</p>
+        <input
+          type="file"
+          id="fileInput"
+          accept="image/*"
+          style="display: none"
+        />
+      </div>
+
+      <img id="preview" />
+
+      <button id="generateBtn">Generate NFT</button>
+      <button id="uploadBtn">Upload to GitHub</button>
+    </div>
+
+    <script>
+      let nftImage = null;
+      const dropzone = document.getElementById("dropzone");
+      const fileInput = document.getElementById("fileInput");
+      const preview = document.getElementById("preview");
+
+      // CLICK to open file dialog
+      dropzone.addEventListener("click", () => fileInput.click());
+
+      // HANDLE FILE SELECT
+      fileInput.addEventListener("change", (e) => {
+        loadImage(e.target.files[0]);
+      });
+
+      // DRAG ENTER
+      dropzone.addEventListener("dragenter", (e) => {
+        e.preventDefault();
+        dropzone.classList.add("dragging");
+      });
+
+      dropzone.addEventListener("dragleave", () => {
+        dropzone.classList.remove("dragging");
+      });
+
+      // DRAG OVER
+      dropzone.addEventListener("dragover", (e) => {
+        e.preventDefault();
+      });
+
+      // DROP
+      dropzone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        dropzone.classList.remove("dragging");
+        const file = e.dataTransfer.files[0];
+        loadImage(file);
+      });
+
+      // Load image into preview
+      function loadImage(file) {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          preview.src = ev.target.result;
+          nftImage = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+
+      // Generate NFT (apply simple frame effect)
+      document.getElementById("generateBtn").onclick = async () => {
+        if (!nftImage) return alert("Chưa có ảnh!");
+
+        const img = new Image();
+        img.src = nftImage;
+
+        await img.decode();
+
+        const canvas = document.createElement("canvas");
+        canvas.width = 1024;
+        canvas.height = 1024;
+        const ctx = canvas.getContext("2d");
+
+        // Background gradient
+        const grad = ctx.createLinearGradient(0, 0, 1024, 1024);
+        grad.addColorStop(0, "#141e30");
+        grad.addColorStop(1, "#243b55");
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 1024, 1024);
+
+        // Draw image in center
+        const size = 900;
+        ctx.drawImage(img, 62, 62, size, size);
+
+        // NFT border
+        ctx.strokeStyle = "#00eaff";
+        ctx.lineWidth = 14;
+        ctx.strokeRect(50, 50, 924, 924);
+
+        preview.src = canvas.toDataURL("image/png");
+        nftImage = preview.src;
+      };
+
+      // Upload to GitHub repo
+      document.getElementById("uploadBtn").onclick = async () => {
+        const token = prompt("Nhập GitHub Token:");
+        const repo = prompt("Tên repo (ví dụ: username/nft-gallery):");
+        const path = "nft-" + Date.now() + ".png";
+
+        const base64 = nftImage.split(",")[1];
+
+        const res = await fetch(
+          `https://api.github.com/repos/${repo}/contents/${path}`,
+          {
+            method: "PUT",
+            headers: {
+              Authorization: `token ${token}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              message: "Upload NFT",
+              content: base64,
+            }),
+          }
+        );
+
+        if (res.ok) alert("Upload thành công!");
+        else alert("Lỗi upload!");
+      };
+    </script>
+  </body>
+</html>
