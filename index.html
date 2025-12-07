@@ -70,81 +70,129 @@
         position: relative;
         display: inline-block;
       }
+      .tabs {
+        display: flex;
+        margin-bottom: 20px;
+      }
+      .tab-button {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        color: inherit;
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-right: 10px;
+      }
+      .tab-button.active {
+        background: rgba(255, 255, 255, 0.1);
+      }
+      .tab-content {
+        display: none;
+      }
+      .tab-content.active {
+        display: block;
+      }
     </style>
   </head>
   <body>
     <div class="card">
       <h2>NFT Editor → GitHub</h2>
 
-      <label>GitHub Token (PAT)</label>
-      <input id="token" placeholder="ghp_xxx..." />
-
       <div class="row">
-        <div>
+        <div style="flex: 0 0 50%">
+          <label>GitHub Token (PAT)</label>
+          <input id="token" placeholder="ghp_xxx..." />
+        </div>
+        <div style="flex: 0 0 20%">
           <label>Owner (username or org)</label>
           <input id="owner" placeholder="your-github-username" />
         </div>
-        <div>
+        <div style="flex: 0 0 30%">
           <label>Repo</label>
           <input id="repo" placeholder="your-repo-name" />
         </div>
-        <div>
-          <label>Branch</label>
-          <input id="branch" placeholder="main" value="main" />
+      </div>
+
+      <div class="tabs">
+        <button class="tab-button active" data-tab="preview">Panel</button>
+        <button class="tab-button" data-tab="list">List</button>
+      </div>
+
+      <div class="tab-content active" id="preview-tab">
+        <div class="row">
+          <div style="flex: 0 0 20%">
+            <label>Branch</label>
+            <input id="branch" placeholder="main" value="main" />
+          </div>
+          <div style="flex: 0 0 25%">
+            <label>Folder path (where to save)</label>
+            <input id="pathPrefix" placeholder="nfts" value="nfts" />
+          </div>
+          <div style="flex: 0 0 55%">
+            <label>Title</label>
+            <input id="title" placeholder="My awesome NFT" value="My NFT" />
+          </div>
         </div>
-        <div>
-          <label>Folder path (where to save)</label>
-          <input id="pathPrefix" placeholder="nfts" value="nfts" />
+
+        <div class="row">
+          <div style="flex: 1">
+            <label>Description</label>
+            <input
+              id="desc"
+              placeholder="Một NFT đẹp từ GitHub Pages"
+              value="Generated from GitHub Pages NFT Editor"
+            />
+          </div>
+        </div>
+
+        <div class="canvas-container">
+          <canvas
+            id="canvas"
+            width="1024"
+            height="1024"
+            style="width: 256px; height: 256px"
+          ></canvas>
+          <span
+            id="expand-icon"
+            style="
+              position: absolute;
+              top: 10px;
+              right: 10px;
+              color: white;
+              font-size: 24px;
+              cursor: pointer;
+            "
+            >🔍</span
+          >
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-top: 12px">
+          <button
+            id="preview"
+            type="button"
+            style="
+              background: rgba(255, 255, 255, 0.02);
+              border: 1px solid rgba(255, 255, 255, 0.06);
+              color: inherit;
+              padding: 5px 10px;
+              border-radius: 8px;
+              cursor: pointer;
+            "
+          >
+            Re-generate
+          </button>
+          <button id="generate">Mint</button>
+        </div>
+
+        <div class="small muted">
+          <div id="status"></div>
+          <pre id="log"></pre>
         </div>
       </div>
 
-      <div class="row">
-        <div style="flex: 0.6">
-          <label>Title</label>
-          <input id="title" placeholder="My awesome NFT" value="My NFT" />
-        </div>
-        <div style="flex: 1.4">
-          <label>Description</label>
-          <input
-            id="desc"
-            placeholder="Một NFT đẹp từ GitHub Pages"
-            value="Generated from GitHub Pages NFT Editor"
-          />
-        </div>
-      </div>
-
-      <div style="display: flex; gap: 10px; margin-top: 12px">
-        <button id="preview" type="button">Re-generate</button>
-        <button id="generate">Mint</button>
-        <button id="list" type="button">List</button>
-      </div>
-
-      <div class="canvas-container">
-        <canvas
-          id="canvas"
-          width="1024"
-          height="1024"
-          style="width: 256px; height: 256px"
-        ></canvas>
-        <span
-          id="expand-icon"
-          style="
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-          "
-          >🔍</span
-        >
-      </div>
-
-      <div id="nft-list" style="margin-top: 20px"></div>
-
-      <div class="small muted">
-        <div id="status"></div>
-        <pre id="log"></pre>
+      <div class="tab-content" id="list-tab">
+        <button id="list" type="button">List NFTs</button>
+        <div id="nft-list" style="margin-top: 20px"></div>
       </div>
     </div>
 
@@ -559,6 +607,24 @@
 
       // quick demo draw on load
       drawNFT("Demo NFT");
+
+      // Tab switching
+      document.querySelectorAll(".tab-button").forEach((button) => {
+        button.addEventListener("click", () => {
+          // Remove active class from all buttons and content
+          document
+            .querySelectorAll(".tab-button")
+            .forEach((btn) => btn.classList.remove("active"));
+          document
+            .querySelectorAll(".tab-content")
+            .forEach((content) => content.classList.remove("active"));
+
+          // Add active class to clicked button and corresponding content
+          button.classList.add("active");
+          const tabId = button.getAttribute("data-tab") + "-tab";
+          document.getElementById(tabId).classList.add("active");
+        });
+      });
     </script>
   </body>
 </html>
