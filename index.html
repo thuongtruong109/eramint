@@ -1,204 +1,564 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
   <head>
-    <meta charset="UTF-8" />
-    <title>NFT Editor</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>NFT Editor → GitHub Commit</title>
     <style>
       body {
-        margin: 0;
-        padding: 0;
-        font-family: Inter, sans-serif;
-        background: #0f0f0f;
-        color: white;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-      }
-
-      .container {
-        width: 420px;
+        font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial;
         padding: 24px;
-        background: rgba(255, 255, 255, 0.06);
-        border-radius: 20px;
-        backdrop-filter: blur(20px);
-        box-shadow: 0 0 40px rgba(0, 0, 0, 0.4);
+        background: #0f172a;
+        color: #e6eef8;
       }
-
-      h2 {
-        text-align: center;
-      }
-
-      .dropzone {
-        width: 100%;
-        height: 260px;
-        border: 2px dashed rgba(255, 255, 255, 0.3);
-        border-radius: 20px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        cursor: pointer;
-        transition: 0.25s;
-      }
-      .dropzone:hover {
-        background: rgba(255, 255, 255, 0.08);
-      }
-
-      .dropzone.dragging {
-        border-color: #00eaff;
-        background: rgba(0, 255, 255, 0.08);
-      }
-
-      #preview {
-        margin-top: 20px;
-        width: 100%;
-        border-radius: 16px;
-      }
-
-      button {
-        width: 100%;
-        padding: 14px;
-        margin-top: 20px;
-        border: none;
+      .card {
+        background: rgba(255, 255, 255, 0.03);
+        padding: 16px;
         border-radius: 12px;
-        background: linear-gradient(135deg, #00eaff, #0066ff);
-        color: white;
-        font-size: 16px;
-        cursor: pointer;
-        transition: 0.2s;
+        box-shadow: 0 6px 24px rgba(2, 6, 23, 0.6);
+        max-width: 900px;
+        margin: auto;
       }
-      button:hover {
-        transform: scale(1.03);
+      canvas {
+        display: block;
+        margin: 12px 0;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #0ea5a4, #7c3aed);
+      }
+      label {
+        display: block;
+        margin-top: 8px;
+        font-size: 13px;
+        color: #cbd5e1;
+      }
+      input,
+      select,
+      button,
+      textarea {
+        width: 100%;
+        padding: 8px 10px;
+        margin-top: 6px;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        background: rgba(255, 255, 255, 0.02);
+        color: inherit;
+      }
+      .row {
+        display: flex;
+        gap: 12px;
+      }
+      .row > * {
+        flex: 1;
+      }
+      .muted {
+        font-size: 12px;
+        color: #9fb0c8;
+        margin-top: 8px;
+      }
+      .small {
+        font-size: 12px;
+        color: #9fb0c8;
+      }
+      .success {
+        color: #9ee6a3;
+      }
+      .error {
+        color: #ffb4b4;
+      }
+      .canvas-container {
+        position: relative;
+        display: inline-block;
       }
     </style>
   </head>
   <body>
-    <div class="container">
-      <h2>NFT Editor</h2>
+    <div class="card">
+      <h2>NFT Editor → GitHub</h2>
 
-      <div class="dropzone" id="dropzone">
-        <p>Kéo ảnh vào đây hoặc bấm để chọn</p>
-        <input
-          type="file"
-          id="fileInput"
-          accept="image/*"
-          style="display: none"
-        />
+      <label>GitHub Token (PAT)</label>
+      <input id="token" placeholder="ghp_xxx..." />
+
+      <div class="row">
+        <div>
+          <label>Owner (username or org)</label>
+          <input id="owner" placeholder="your-github-username" />
+        </div>
+        <div>
+          <label>Repo</label>
+          <input id="repo" placeholder="your-repo-name" />
+        </div>
+        <div>
+          <label>Branch</label>
+          <input id="branch" placeholder="main" value="main" />
+        </div>
+        <div>
+          <label>Folder path (where to save)</label>
+          <input id="pathPrefix" placeholder="nfts" value="nfts" />
+        </div>
       </div>
 
-      <img id="preview" />
+      <div class="row">
+        <div style="flex: 0.6">
+          <label>Title</label>
+          <input id="title" placeholder="My awesome NFT" value="My NFT" />
+        </div>
+        <div style="flex: 1.4">
+          <label>Description</label>
+          <input
+            id="desc"
+            placeholder="Một NFT đẹp từ GitHub Pages"
+            value="Generated from GitHub Pages NFT Editor"
+          />
+        </div>
+      </div>
 
-      <button id="generateBtn">Generate NFT</button>
-      <button id="uploadBtn">Upload to GitHub</button>
+      <div style="display: flex; gap: 10px; margin-top: 12px">
+        <button id="preview" type="button">Re-generate</button>
+        <button id="generate">Mint</button>
+        <button id="list" type="button">List</button>
+      </div>
+
+      <div class="canvas-container">
+        <canvas
+          id="canvas"
+          width="1024"
+          height="1024"
+          style="width: 256px; height: 256px"
+        ></canvas>
+        <span
+          id="expand-icon"
+          style="
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+          "
+          >🔍</span
+        >
+      </div>
+
+      <div id="nft-list" style="margin-top: 20px"></div>
+
+      <div class="small muted">
+        <div id="status"></div>
+        <pre id="log"></pre>
+      </div>
     </div>
 
     <script>
-      let nftImage = null;
-      const dropzone = document.getElementById("dropzone");
-      const fileInput = document.getElementById("fileInput");
-      const preview = document.getElementById("preview");
+      const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d", { alpha: true });
+      const logEl = document.getElementById("log");
+      const statusEl = document.getElementById("status");
 
-      // CLICK to open file dialog
-      dropzone.addEventListener("click", () => fileInput.click());
-
-      // HANDLE FILE SELECT
-      fileInput.addEventListener("change", (e) => {
-        loadImage(e.target.files[0]);
-      });
-
-      // DRAG ENTER
-      dropzone.addEventListener("dragenter", (e) => {
-        e.preventDefault();
-        dropzone.classList.add("dragging");
-      });
-
-      dropzone.addEventListener("dragleave", () => {
-        dropzone.classList.remove("dragging");
-      });
-
-      // DRAG OVER
-      dropzone.addEventListener("dragover", (e) => {
-        e.preventDefault();
-      });
-
-      // DROP
-      dropzone.addEventListener("drop", (e) => {
-        e.preventDefault();
-        dropzone.classList.remove("dragging");
-        const file = e.dataTransfer.files[0];
-        loadImage(file);
-      });
-
-      // Load image into preview
-      function loadImage(file) {
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-          preview.src = ev.target.result;
-          nftImage = ev.target.result;
-        };
-        reader.readAsDataURL(file);
+      function log(...args) {
+        logEl.textContent +=
+          args
+            .map((a) =>
+              typeof a === "object" ? JSON.stringify(a, null, 2) : String(a)
+            )
+            .join(" ") + "\\n";
+        logEl.scrollTop = 1e9;
       }
 
-      // Generate NFT (apply simple frame effect)
-      document.getElementById("generateBtn").onclick = async () => {
-        if (!nftImage) return alert("Chưa có ảnh!");
+      // Simple generator: gradient + shapes + random text + timestamp
+      function drawNFT(title = "My NFT") {
+        const w = canvas.width,
+          h = canvas.height;
+        // background gradient
+        const g = ctx.createLinearGradient(0, 0, w, h);
+        const a = Math.floor(Math.random() * 360);
+        g.addColorStop(0, `hsl(${a}deg 70% 45% / 1)`);
+        g.addColorStop(1, `hsl(${(a + 60) % 360}deg 70% 55% / 0.9)`);
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, w, h);
 
-        const img = new Image();
-        img.src = nftImage;
+        // random blob shapes
+        for (let i = 0; i < 6; i++) {
+          ctx.beginPath();
+          ctx.globalAlpha = 0.12 + Math.random() * 0.25;
+          ctx.fillStyle = `hsl(${(a + i * 30) % 360}deg 80% 50%)`;
+          const cx = Math.random() * w;
+          const cy = Math.random() * h;
+          const rx = 120 + Math.random() * 520;
+          const ry = 120 + Math.random() * 520;
+          ctx.ellipse(cx, cy, rx, ry, Math.random() * Math.PI, 0, Math.PI * 2);
+          ctx.fill();
+        }
 
-        await img.decode();
+        // decorative circles
+        ctx.globalAlpha = 0.35;
+        for (let i = 0; i < 20; i++) {
+          ctx.beginPath();
+          const r = 8 + Math.random() * 120;
+          ctx.fillStyle = `hsla(${(a + i * 7) % 360}deg,60%,55%,0.6)`;
+          ctx.arc(Math.random() * w, Math.random() * h, r, 0, Math.PI * 2);
+          ctx.fill();
+        }
 
-        const canvas = document.createElement("canvas");
-        canvas.width = 1024;
-        canvas.height = 1024;
-        const ctx = canvas.getContext("2d");
+        // center rounded panel
+        ctx.globalAlpha = 0.9;
+        ctx.fillStyle = "rgba(255,255,255,0.06)";
+        const pad = 96;
+        roundRect(ctx, pad, pad, w - 2 * pad, h - 2 * pad, 40);
+        ctx.fill();
 
-        // Background gradient
-        const grad = ctx.createLinearGradient(0, 0, 1024, 1024);
-        grad.addColorStop(0, "#141e30");
-        grad.addColorStop(1, "#243b55");
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, 1024, 1024);
+        // title text
+        ctx.fillStyle = "white";
+        ctx.globalAlpha = 1;
+        ctx.textAlign = "center";
+        ctx.font = "bold 56px system-ui, Inter, Roboto, Arial";
+        ctx.fillText(title, w / 2, h * 0.85);
 
-        // Draw image in center
-        const size = 900;
-        ctx.drawImage(img, 62, 62, size, size);
+        // small author / timestamp
+        ctx.font = "20px system-ui, Inter";
+        ctx.fillStyle = "rgba(255,255,255,0.85)";
+        const ts = new Date().toISOString();
+        ctx.fillText("by GitHub Pages • " + ts, w / 2, h * 0.9);
+      }
 
-        // NFT border
-        ctx.strokeStyle = "#00eaff";
-        ctx.lineWidth = 14;
-        ctx.strokeRect(50, 50, 924, 924);
+      function roundRect(ctx, x, y, w, h, r) {
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.arcTo(x + w, y, x + w, y + h, r);
+        ctx.arcTo(x + w, y + h, x, y + h, r);
+        ctx.arcTo(x, y + h, x, y, r);
+        ctx.arcTo(x, y, x + w, y, r);
+        ctx.closePath();
+      }
 
-        preview.src = canvas.toDataURL("image/png");
-        nftImage = preview.src;
-      };
+      let isExpanded = false;
+      document.getElementById("expand-icon").addEventListener("click", () => {
+        if (isExpanded) {
+          canvas.style.width = "256px";
+          canvas.style.height = "256px";
+          document.getElementById("expand-icon").textContent = "🔍";
+          isExpanded = false;
+        } else {
+          canvas.style.width = "512px";
+          canvas.style.height = "512px";
+          document.getElementById("expand-icon").textContent = "✖";
+          isExpanded = true;
+        }
+      });
 
-      // Upload to GitHub repo
-      document.getElementById("uploadBtn").onclick = async () => {
-        const token = prompt("Nhập GitHub Token:");
-        const repo = prompt("Tên repo (ví dụ: username/nft-gallery):");
-        const path = "nft-" + Date.now() + ".png";
+      document.getElementById("preview").addEventListener("click", () => {
+        drawNFT(document.getElementById("title").value || "My NFT");
+        statusEl.textContent = "Preview drawn.";
+      });
 
-        const base64 = nftImage.split(",")[1];
+      document
+        .getElementById("generate")
+        .addEventListener("click", async () => {
+          try {
+            log("--- Starting generation ---");
+            const token = document.getElementById("token").value.trim();
+            const owner = document.getElementById("owner").value.trim();
+            const repo = document.getElementById("repo").value.trim();
+            const branch =
+              document.getElementById("branch").value.trim() || "main";
+            const pathPrefix =
+              document.getElementById("pathPrefix").value.trim() || "nfts";
+            const title =
+              document.getElementById("title").value.trim() || "My NFT";
+            const desc = document.getElementById("desc").value.trim() || "";
 
-        const res = await fetch(
-          `https://api.github.com/repos/${repo}/contents/${path}`,
-          {
-            method: "PUT",
-            headers: {
-              Authorization: `token ${token}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              message: "Upload NFT",
-              content: base64,
-            }),
+            if (!token || !owner || !repo) {
+              statusEl.textContent = "Chưa nhập token/owner/repo";
+              statusEl.className = "small error";
+              return;
+            }
+
+            // draw
+            drawNFT(title);
+            statusEl.textContent = "Canvas generated. Preparing upload...";
+            statusEl.className = "small";
+
+            // convert to base64 (dataURL)
+            const dataUrl = canvas.toDataURL("image/png");
+            const base64 = dataUrl.split(",")[1];
+
+            // filename unique
+            const ts = Date.now();
+            const imagePath = `${pathPrefix}/${title.replace(
+              /[^a-z0-9\-]/gi,
+              "_"
+            )}_${ts}.png`;
+            const metaPath = `${pathPrefix}/${title.replace(
+              /[^a-z0-9\-]/gi,
+              "_"
+            )}_${ts}.json`;
+
+            // create image file (PUT to contents)
+            log("Uploading image to", `${owner}/${repo}/${imagePath}`);
+            await createFileOnGithub({
+              token,
+              owner,
+              repo,
+              branch,
+              path: imagePath,
+              contentBase64: base64,
+              message: `Add NFT image ${imagePath}`,
+            });
+
+            // raw URL for image
+            const rawUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${encodeURIComponent(
+              imagePath
+            )}`;
+
+            // metadata
+            const metadata = {
+              name: title,
+              description: desc,
+              image: rawUrl,
+              created_at: new Date().toISOString(),
+            };
+            const metadataBase64 = btoa(
+              unescape(encodeURIComponent(JSON.stringify(metadata, null, 2)))
+            );
+
+            log("Uploading metadata to", `${owner}/${repo}/${metaPath}`);
+            await createFileOnGithub({
+              token,
+              owner,
+              repo,
+              branch,
+              path: metaPath,
+              contentBase64: metadataBase64,
+              message: `Add NFT metadata ${metaPath}`,
+            });
+
+            statusEl.textContent = "Done — image + metadata pushed.";
+            statusEl.className = "small success";
+            log("All done. Image:", rawUrl);
+          } catch (err) {
+            console.error(err);
+            statusEl.textContent = "Error: " + (err.message || err);
+            statusEl.className = "small error";
+            log("ERROR:", err);
           }
-        );
+        });
 
-        if (res.ok) alert("Upload thành công!");
-        else alert("Lỗi upload!");
-      };
+      document.getElementById("list").addEventListener("click", async () => {
+        try {
+          log("--- Listing NFTs ---");
+          const token = document.getElementById("token").value.trim();
+          const owner = document.getElementById("owner").value.trim();
+          const repo = document.getElementById("repo").value.trim();
+          const branch =
+            document.getElementById("branch").value.trim() || "main";
+          const pathPrefix =
+            document.getElementById("pathPrefix").value.trim() || "nfts";
+
+          if (!token || !owner || !repo) {
+            statusEl.textContent = "Chưa nhập token/owner/repo";
+            statusEl.className = "small error";
+            return;
+          }
+
+          const listEl = document.getElementById("nft-list");
+          listEl.innerHTML = "<p>Loading...</p>";
+
+          const url = `https://api.github.com/repos/${encodeURIComponent(
+            owner
+          )}/${encodeURIComponent(repo)}/contents/${encodeURIComponent(
+            pathPrefix
+          )}?ref=${encodeURIComponent(branch)}`;
+          const res = await fetch(url, {
+            headers: {
+              Authorization: "token " + token,
+              Accept: "application/vnd.github+json",
+            },
+          });
+
+          if (!res.ok) {
+            throw new Error(
+              `GitHub API error ${res.status}: ${res.statusText}`
+            );
+          }
+
+          const files = await res.json();
+          const jsonFiles = files.filter((f) => f.name.endsWith(".json"));
+
+          if (jsonFiles.length === 0) {
+            listEl.innerHTML = "<p>No NFTs found.</p>";
+            return;
+          }
+
+          listEl.innerHTML = "<h3>Minted NFTs:</h3><ul></ul>";
+          const ul = listEl.querySelector("ul");
+
+          for (const file of jsonFiles) {
+            const metaRes = await fetch(file.download_url);
+            const metadata = await metaRes.json();
+
+            const li = document.createElement("li");
+            li.style.marginBottom = "10px";
+            li.innerHTML = `
+              <strong>${metadata.name}</strong><br>
+              ${metadata.description}<br>
+              <img src="${metadata.image}" style="width: 100px; height: 100px; object-fit: cover;"><br>
+              Created: ${metadata.created_at}<br>
+              <button class="remove-btn" data-sha="${file.sha}" data-path="${file.path}">Remove</button>
+            `;
+            ul.appendChild(li);
+          }
+
+          // Add event listeners to remove buttons
+          document.querySelectorAll(".remove-btn").forEach((btn) => {
+            btn.addEventListener("click", async (e) => {
+              const metaPath = e.target.dataset.path;
+              const metaSha = e.target.dataset.sha;
+              const imagePath = metaPath.replace(".json", ".png");
+              if (confirm(`Remove NFT: ${metaPath} and ${imagePath}?`)) {
+                try {
+                  // Get SHA for image file
+                  const imageUrl = `https://api.github.com/repos/${encodeURIComponent(
+                    owner
+                  )}/${encodeURIComponent(repo)}/contents/${encodeURIComponent(
+                    imagePath
+                  )}?ref=${encodeURIComponent(branch)}`;
+                  const imageRes = await fetch(imageUrl, {
+                    headers: {
+                      Authorization: "token " + token,
+                      Accept: "application/vnd.github+json",
+                    },
+                  });
+                  if (!imageRes.ok) {
+                    throw new Error(
+                      `Failed to get image SHA: ${imageRes.status}`
+                    );
+                  }
+                  const imageData = await imageRes.json();
+                  const imageSha = imageData.sha;
+
+                  // Delete metadata
+                  await deleteFileOnGithub({
+                    token,
+                    owner,
+                    repo,
+                    branch,
+                    path: metaPath,
+                    sha: metaSha,
+                    message: `Remove NFT metadata ${metaPath}`,
+                  });
+                  // Delete image
+                  await deleteFileOnGithub({
+                    token,
+                    owner,
+                    repo,
+                    branch,
+                    path: imagePath,
+                    sha: imageSha,
+                    message: `Remove NFT image ${imagePath}`,
+                  });
+
+                  log(`Removed ${metaPath} and ${imagePath}`);
+                  // Refresh list
+                  document.getElementById("list").click();
+                } catch (err) {
+                  log("Error removing:", err);
+                  alert("Error removing NFT: " + err.message);
+                }
+              }
+            });
+          });
+
+          statusEl.textContent = `Listed ${jsonFiles.length} NFTs.`;
+          statusEl.className = "small success";
+        } catch (err) {
+          console.error(err);
+          statusEl.textContent = "Error listing NFTs: " + (err.message || err);
+          statusEl.className = "small error";
+          log("ERROR:", err);
+        }
+      });
+      async function createFileOnGithub({
+        token,
+        owner,
+        repo,
+        branch = "main",
+        path,
+        contentBase64,
+        message,
+      }) {
+        const url = `https://api.github.com/repos/${encodeURIComponent(
+          owner
+        )}/${encodeURIComponent(repo)}/contents/${encodeURIComponent(path)}`;
+        const body = {
+          message: message || `Add ${path}`,
+          content: contentBase64,
+          branch: branch,
+        };
+        const res = await fetch(url, {
+          method: "PUT",
+          headers: {
+            Authorization: "token " + token,
+            Accept: "application/vnd.github+json",
+            "X-GitHub-Api-Version": "2022-11-28",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(body),
+        });
+
+        const j = await res.json();
+        if (!res.ok) {
+          // helpful error message
+          let msg = `GitHub API error ${res.status}`;
+          if (j && j.message) msg += ": " + j.message;
+          throw new Error(
+            msg + (j && j.errors ? "\\n" + JSON.stringify(j.errors) : "")
+          );
+        }
+        log("Create file response:", j.content && j.content.path);
+        return j;
+      }
+
+      async function deleteFileOnGithub({
+        token,
+        owner,
+        repo,
+        branch = "main",
+        path,
+        sha,
+        message,
+      }) {
+        const url = `https://api.github.com/repos/${encodeURIComponent(
+          owner
+        )}/${encodeURIComponent(repo)}/contents/${encodeURIComponent(path)}`;
+        const body = {
+          message: message || `Delete ${path}`,
+          sha: sha,
+          branch: branch,
+        };
+        const res = await fetch(url, {
+          method: "DELETE",
+          headers: {
+            Authorization: "token " + token,
+            Accept: "application/vnd.github+json",
+            "X-GitHub-Api-Version": "2022-11-28",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(body),
+        });
+
+        const j = await res.json();
+        if (!res.ok) {
+          let msg = `GitHub API error ${res.status}`;
+          if (j && j.message) msg += ": " + j.message;
+          throw new Error(
+            msg + (j && j.errors ? "\\n" + JSON.stringify(j.errors) : "")
+          );
+        }
+        log("Delete file response:", j.commit && j.commit.sha);
+        return j;
+      }
+
+      // quick demo draw on load
+      drawNFT("Demo NFT");
     </script>
   </body>
 </html>
