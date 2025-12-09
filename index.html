@@ -16,8 +16,7 @@
         background: rgba(255, 255, 255, 0.03);
         padding: 16px;
         border-radius: 12px;
-        box-shadow: 0 6px 24px rgba(2, 6, 23, 0.6);
-        max-width: 900px;
+        max-width: 40rem;
         margin: auto;
       }
       canvas {
@@ -25,12 +24,13 @@
         margin: 12px 0;
         border-radius: 8px;
         background: linear-gradient(135deg, #0ea5a4, #7c3aed);
+        max-width: 100%;
       }
       label {
         display: block;
         margin-top: 8px;
-        font-size: 13px;
-        color: #cbd5e1;
+        font-size: 11px;
+        color: #cbd5e193;
       }
       input,
       select,
@@ -43,13 +43,20 @@
         border: 1px solid rgba(255, 255, 255, 0.06);
         background: rgba(255, 255, 255, 0.02);
         color: inherit;
+        box-sizing: border-box;
+        outline: none;
+      }
+      button {
+        cursor: pointer;
       }
       .row {
         display: flex;
         gap: 12px;
+        margin-bottom: 12px;
       }
       .row > * {
         flex: 1;
+        min-width: 0;
       }
       .muted {
         font-size: 12px;
@@ -69,6 +76,7 @@
       .canvas-container {
         position: relative;
         display: inline-block;
+        max-width: 100%;
       }
       .tabs {
         display: flex;
@@ -78,7 +86,7 @@
         background: rgba(255, 255, 255, 0.02);
         border: 1px solid rgba(255, 255, 255, 0.06);
         color: inherit;
-        padding: 10px 20px;
+        padding: 5px 10px;
         border-radius: 8px;
         cursor: pointer;
         margin-right: 10px;
@@ -92,43 +100,149 @@
       .tab-content.active {
         display: block;
       }
+      .dropdown {
+        position: relative;
+        display: flex;
+        gap: 1px;
+      }
+      .download-main-btn {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-right: none;
+        color: inherit;
+        padding: 8px 16px;
+        border-radius: 8px 0 0 8px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: all 0.2s;
+        width: auto;
+      }
+      .download-main-btn:hover {
+        background: rgba(255, 255, 255, 0.05);
+      }
+      .dropdown-trigger {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-left: none;
+        color: inherit;
+        padding: 8px 10px;
+        border-radius: 0 8px 8px 0;
+        cursor: pointer;
+        font-size: 14px;
+        transition: all 0.2s;
+        width: auto;
+        min-width: 32px;
+      }
+      .dropdown-trigger:hover {
+        background: rgba(255, 255, 255, 0.05);
+      }
+      .dropdown-arrow {
+        width: 0;
+        height: 0;
+        border-left: 4px solid transparent;
+        border-right: 4px solid transparent;
+        border-top: 5px solid currentColor;
+        transition: transform 0.2s;
+      }
+      .dropdown.open .dropdown-arrow {
+        transform: rotate(180deg);
+      }
+      .dropdown-menu {
+        position: absolute;
+        top: calc(100% + 4px);
+        left: 0;
+        background: rgba(30, 41, 59, 0.98);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        padding: 4px;
+        min-width: 140px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-8px);
+        transition: all 0.2s;
+        z-index: 1000;
+      }
+      .dropdown.open .dropdown-menu {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+      .dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 13px;
+        color: #e6eef8;
+        transition: background 0.15s;
+        white-space: nowrap;
+      }
+      .dropdown-item:hover {
+        background: rgba(255, 255, 255, 0.08);
+      }
+      .dropdown-item-icon {
+        font-size: 12px;
+        opacity: 0.7;
+      }
+      .button-group {
+        display: flex;
+        gap: 10px;
+        margin-top: 12px;
+      }
+      .button-group > * {
+        flex: 1;
+      }
     </style>
   </head>
   <body>
     <div class="card">
-      <h2>NFT Editor → GitHub</h2>
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        "
+      >
+        <h2>NFT Editor → GitHub</h2>
 
-      <div class="row">
-        <div style="flex: 0 0 50%">
-          <label>GitHub Token (PAT)</label>
-          <input id="token" placeholder="ghp_xxx..." />
-        </div>
-        <div style="flex: 0 0 20%">
-          <label>Owner (username or org)</label>
-          <input id="owner" placeholder="your-github-username" />
-        </div>
-        <div style="flex: 0 0 30%">
-          <label>Repo</label>
-          <input id="repo" placeholder="your-repo-name" />
+        <div class="tabs">
+          <button class="tab-button active" data-tab="preview">Panel</button>
+          <button class="tab-button" data-tab="list">List</button>
         </div>
       </div>
 
-      <div class="tabs">
-        <button class="tab-button active" data-tab="preview">Panel</button>
-        <button class="tab-button" data-tab="list">List</button>
+      <div class="row">
+        <div style="flex: 0 0 calc(50% - 8px)">
+          <label>Token (PAT)</label>
+          <input id="token" placeholder="ghp_xxx..." />
+        </div>
+        <div style="flex: 0 0 calc(20% - 8px)">
+          <label>Owner</label>
+          <input id="owner" placeholder="username or org" />
+        </div>
+        <div style="flex: 0 0 calc(30% - 8px)">
+          <label>Repo</label>
+          <input id="repo" placeholder="repository" />
+        </div>
       </div>
 
       <div class="tab-content active" id="preview-tab">
         <div class="row">
-          <div style="flex: 0 0 20%">
+          <div style="flex: 0 0 calc(20% - 8px)">
             <label>Branch</label>
             <input id="branch" placeholder="main" value="main" />
           </div>
-          <div style="flex: 0 0 25%">
+          <div style="flex: 0 0 calc(25% - 8px)">
             <label>Folder path (where to save)</label>
             <input id="pathPrefix" placeholder="nfts" value="nfts" />
           </div>
-          <div style="flex: 0 0 55%">
+          <div style="flex: 0 0 calc(55% - 8px)">
             <label>Title</label>
             <input id="title" placeholder="My awesome NFT" value="My NFT" />
           </div>
@@ -146,12 +260,7 @@
         </div>
 
         <div class="canvas-container">
-          <canvas
-            id="canvas"
-            width="1024"
-            height="1024"
-            style="width: 256px; height: 256px"
-          ></canvas>
+          <canvas id="canvas" width="2048" height="1152"></canvas>
           <span
             id="expand-icon"
             style="
@@ -166,7 +275,7 @@
           >
         </div>
 
-        <div style="display: flex; gap: 10px; margin-top: 12px">
+        <div class="button-group">
           <button
             id="preview"
             type="button"
@@ -174,13 +283,50 @@
               background: rgba(255, 255, 255, 0.02);
               border: 1px solid rgba(255, 255, 255, 0.06);
               color: inherit;
-              padding: 5px 10px;
+              padding: 8px 12px;
               border-radius: 8px;
               cursor: pointer;
             "
           >
             Re-generate
           </button>
+
+          <div class="dropdown" id="download-dropdown">
+            <button
+              class="download-main-btn"
+              id="download-btn"
+              type="button"
+              data-current-format="png"
+            >
+              Export as PNG
+            </button>
+            <button class="dropdown-trigger" type="button">
+              <div class="dropdown-arrow"></div>
+            </button>
+            <div class="dropdown-menu">
+              <div class="dropdown-item" data-format="png">
+                <span class="dropdown-item-icon">📄</span>
+                <span>Save PNG</span>
+              </div>
+              <div class="dropdown-item" data-format="jpg">
+                <span class="dropdown-item-icon">📷</span>
+                <span>Save JPG</span>
+              </div>
+              <div class="dropdown-item" data-format="svg">
+                <span class="dropdown-item-icon">🎨</span>
+                <span>Save SVG</span>
+              </div>
+              <div class="dropdown-item" data-format="avif">
+                <span class="dropdown-item-icon">🖼️</span>
+                <span>Save AVIF</span>
+              </div>
+              <div class="dropdown-item" data-format="webp">
+                <span class="dropdown-item-icon">🌐</span>
+                <span>Save WEBP</span>
+              </div>
+            </div>
+          </div>
+
           <button id="generate">Mint</button>
         </div>
 
@@ -282,12 +428,12 @@
       document.getElementById("expand-icon").addEventListener("click", () => {
         if (isExpanded) {
           canvas.style.width = "256px";
-          canvas.style.height = "256px";
+          canvas.style.height = "144px";
           document.getElementById("expand-icon").textContent = "🔍";
           isExpanded = false;
         } else {
           canvas.style.width = "512px";
-          canvas.style.height = "512px";
+          canvas.style.height = "288px";
           document.getElementById("expand-icon").textContent = "✖";
           isExpanded = true;
         }
@@ -296,6 +442,116 @@
       document.getElementById("preview").addEventListener("click", () => {
         drawNFT(document.getElementById("title").value || "My NFT");
         statusEl.textContent = "Preview drawn.";
+      });
+
+      // Download functionality
+      function downloadFile(dataUrl, filename) {
+        const link = document.createElement("a");
+        link.download = filename;
+        link.href = dataUrl;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+
+      function downloadCanvas(format) {
+        const title = document.getElementById("title").value.trim() || "My_NFT";
+        const fileName = `${title.replace(/[^a-z0-9\-]/gi, "_")}_${Date.now()}`;
+
+        try {
+          let dataUrl;
+
+          switch (format) {
+            case "png":
+              dataUrl = canvas.toDataURL("image/png");
+              downloadFile(dataUrl, `${fileName}.png`);
+              statusEl.textContent = "Downloaded as PNG";
+              break;
+
+            case "jpg":
+              dataUrl = canvas.toDataURL("image/jpeg", 0.95);
+              downloadFile(dataUrl, `${fileName}.jpg`);
+              statusEl.textContent = "Downloaded as JPG";
+              break;
+
+            case "webp":
+              dataUrl = canvas.toDataURL("image/webp", 0.95);
+              downloadFile(dataUrl, `${fileName}.webp`);
+              statusEl.textContent = "Downloaded as WEBP";
+              break;
+
+            case "avif":
+              try {
+                dataUrl = canvas.toDataURL("image/avif", 0.95);
+                downloadFile(dataUrl, `${fileName}.avif`);
+                statusEl.textContent = "Downloaded as AVIF";
+              } catch (err) {
+                statusEl.textContent =
+                  "AVIF not supported - downloading as PNG instead";
+                dataUrl = canvas.toDataURL("image/png");
+                downloadFile(dataUrl, `${fileName}.png`);
+              }
+              break;
+
+            case "svg":
+              const pngData = canvas.toDataURL("image/png");
+              const svgContent = `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+     width="${canvas.width}" height="${canvas.height}" viewBox="0 0 ${canvas.width} ${canvas.height}">
+  <image width="${canvas.width}" height="${canvas.height}" xlink:href="${pngData}"/>
+</svg>`;
+              const svgBlob = new Blob([svgContent], { type: "image/svg+xml" });
+              const svgUrl = URL.createObjectURL(svgBlob);
+              downloadFile(svgUrl, `${fileName}.svg`);
+              setTimeout(() => URL.revokeObjectURL(svgUrl), 100);
+              statusEl.textContent = "Downloaded as SVG";
+              break;
+          }
+
+          statusEl.className = "small success";
+        } catch (err) {
+          console.error("Download error:", err);
+          statusEl.textContent = "Download failed: " + err.message;
+          statusEl.className = "small error";
+        }
+      }
+
+      // Main download button - uses current format
+      const downloadBtn = document.getElementById("download-btn");
+      downloadBtn.addEventListener("click", () => {
+        const currentFormat = downloadBtn.dataset.currentFormat || "png";
+        downloadCanvas(currentFormat);
+      });
+
+      // Download dropdown functionality
+      const dropdown = document.getElementById("download-dropdown");
+      const dropdownTrigger = dropdown.querySelector(".dropdown-trigger");
+      const dropdownItems = dropdown.querySelectorAll(".dropdown-item");
+
+      dropdownTrigger.addEventListener("click", (e) => {
+        e.stopPropagation();
+        dropdown.classList.toggle("open");
+      });
+
+      // Close dropdown when clicking outside
+      document.addEventListener("click", (e) => {
+        if (!dropdown.contains(e.target)) {
+          dropdown.classList.remove("open");
+        }
+      });
+
+      // Dropdown menu items
+      dropdownItems.forEach((item) => {
+        item.addEventListener("click", () => {
+          const format = item.dataset.format;
+          dropdown.classList.remove("open");
+
+          // Update button text and current format
+          downloadBtn.textContent = `Export as ${format.toUpperCase()}`;
+          downloadBtn.dataset.currentFormat = format;
+
+          downloadCanvas(format);
+        });
       });
 
       document
