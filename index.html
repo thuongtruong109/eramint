@@ -14,7 +14,7 @@
       }
       .card {
         background: rgba(255, 255, 255, 0.03);
-        padding: 16px;
+        padding: 0.5rem 1rem;
         border-radius: 12px;
         max-width: 40rem;
         margin: auto;
@@ -115,7 +115,7 @@
         cursor: pointer;
         font-size: 14px;
         transition: all 0.2s;
-        width: auto;
+        flex: 1;
       }
       .download-main-btn:hover {
         background: rgba(255, 255, 255, 0.05);
@@ -239,7 +239,7 @@
             <input id="branch" placeholder="main" value="main" />
           </div>
           <div style="flex: 0 0 calc(25% - 8px)">
-            <label>Folder path (where to save)</label>
+            <label>Folder path</label>
             <input id="pathPrefix" placeholder="nfts" value="nfts" />
           </div>
           <div style="flex: 0 0 calc(55% - 8px)">
@@ -424,24 +424,86 @@
         ctx.closePath();
       }
 
+      // Random title and description generators
+      const adjectives = [
+        "Cosmic",
+        "Abstract",
+        "Digital",
+        "Ethereal",
+        "Vibrant",
+        "Mystical",
+        "Geometric",
+        "Surreal",
+        "Harmonic",
+        "Radiant",
+      ];
+      const nouns = [
+        "Dream",
+        "Harmony",
+        "Vision",
+        "Journey",
+        "Canvas",
+        "Spectrum",
+        "Realm",
+        "Echo",
+        "Pulse",
+        "Aura",
+      ];
+      const descriptors = [
+        "A unique digital artwork",
+        "An algorithmic masterpiece",
+        "A generative art piece",
+        "A blockchain-ready creation",
+        "An innovative NFT design",
+      ];
+
+      function generateRandomTitle() {
+        const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
+        const noun = nouns[Math.floor(Math.random() * nouns.length)];
+        const num = Math.floor(Math.random() * 1000) + 1;
+        return `${adj} ${noun} #${num}`;
+      }
+
+      function generateRandomDescription() {
+        const desc =
+          descriptors[Math.floor(Math.random() * descriptors.length)];
+        const extra = [
+          "generated on GitHub Pages",
+          "crafted with code",
+          "born from algorithms",
+          "inspired by the digital age",
+        ][Math.floor(Math.random() * 4)];
+        return `${desc} ${extra}.`;
+      }
+
       let isExpanded = false;
       document.getElementById("expand-icon").addEventListener("click", () => {
         if (isExpanded) {
-          canvas.style.width = "256px";
-          canvas.style.height = "144px";
+          document.exitFullscreen().catch(() => {});
           document.getElementById("expand-icon").textContent = "🔍";
           isExpanded = false;
         } else {
-          canvas.style.width = "512px";
-          canvas.style.height = "288px";
+          canvas.requestFullscreen().catch(() => {});
           document.getElementById("expand-icon").textContent = "✖";
           isExpanded = true;
         }
       });
 
+      document.addEventListener("fullscreenchange", () => {
+        isExpanded = !!document.fullscreenElement;
+        document.getElementById("expand-icon").textContent = isExpanded
+          ? "✖"
+          : "🔍";
+      });
+
       document.getElementById("preview").addEventListener("click", () => {
-        drawNFT(document.getElementById("title").value || "My NFT");
-        statusEl.textContent = "Preview drawn.";
+        const randomTitle = generateRandomTitle();
+        const randomDesc = generateRandomDescription();
+        document.getElementById("title").value = randomTitle;
+        document.getElementById("desc").value = randomDesc;
+        drawNFT(randomTitle);
+        statusEl.textContent =
+          "Preview drawn with new random title and description.";
       });
 
       // Download functionality

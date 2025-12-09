@@ -7,16 +7,9 @@
 ✅ Lưu file NFT đã tạo
 ✅ Dữ liệu được versioned (mỗi NFT là một commit)
 ✅ Preview NFT
+✅ Multiple export format (.jpg, .png, .avif, .webp, .svg...)
 
 Chỉnh sửa like Figma mini (drag, scale, color)
-
-Generate ra:
-
-PNG
-
-SVG
-
-JSON metadata
 
 - GitHub Actions có thể auto-build gallery
 
@@ -24,10 +17,6 @@ JSON metadata
 - Press "Mint" → generate file.
 
 Pages hiển thị gallery NFT luôn
-
-Dữ liệu nằm trong repo → scale vô hạn
-
-Bạn sẽ có history “evolution” của mỗi NFT cực hay.
 
 3. Auto Regenerate Gallery
 
@@ -83,8 +72,6 @@ Kéo thả, resize, rotate
 
 Live preview
 
-Export ra PNG/SVG
-
 ✅ B. NFT Generator (auto generation)
 
 Bấm nút Generate Random NFT →
@@ -101,30 +88,7 @@ Random text / quote
 
 Random mascot icon (SVG)
 
-Tạo mỗi lần khác nhau → ra chuỗi NFT random đẹp đẹp.
-
-Một app GitHub Pages như sau:
-
-NFT Studio
-├─ NFT Editor (custom)
-├─ NFT Generator (random)
-└─ Save to GitHub repo (no backend)
-
-User có 2 mode:
-
-Editor Mode: Tự design → Save
-
-Generator Mode: Random NFT → Save
-
 NFT sau khi Save → push thẳng vào /nfts/<timestamp>.png trong chính repo.
-
-🧠 Cách Save vào Repo không cần Backend
-
-Frontend sẽ dùng:
-
-👉 GitHub API:
-
-PUT /repos/:owner/:repo/contents/:path
 
 Workflow:
 
@@ -136,18 +100,6 @@ Gửi request lên GitHub API
 
 API tự tạo file .png trong repo
 
-🎨 Giao diện đề xuất
-+-----------------------------------+
-| NFT Studio |
-+-------------------+---------------+
-| Editor / Generate| NFT Preview |
-| | |
-| [Upload Image] | [Save to GitHub]
-| [Add Text] |
-| [Add Icon] |
-| [Random NFT] |
-+-----------------------------------+
-
 Dùng clean UI kiểu Tailwind + shadcn.
 
 Tạo bộ sưu tập 100 NFT
@@ -155,20 +107,6 @@ Tạo bộ sưu tập 100 NFT
 Web3 Mint (optional)
 
 Export ZIP chứa nhiều NFT
-
-Gallery tab hiển thị toàn bộ file trong /nfts (dùng GitHub API GET list)
-
-🚧 Nếu muốn, tôi có thể build sẵn repo template:
-
-/index.html
-
-/src/editor.js
-
-/src/generator.js
-
-/src/github.js
-
-⚡ Nâng cấp có thể thêm
 
 1. Random seed đảm bảo deterministic
 
