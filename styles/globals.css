@@ -1,0 +1,106 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-family-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-family-poppins: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+
+  --container-padding: 2rem;
+  --container-max-width-2xl: 1400px;
+
+  --color-border: oklch(88% 0.03 260);
+  --color-input: oklch(88% 0.03 260);
+  --color-ring: oklch(65% 0.2 270);
+  --color-background: oklch(100% 0 0);
+  --color-foreground: oklch(25% 0.15 260);
+  --color-primary: oklch(65% 0.2 270);
+  --color-primary-foreground: oklch(98% 0.01 270);
+  --color-secondary: oklch(80% 0.1 190);
+  --color-secondary-foreground: oklch(25% 0.15 260);
+  --color-accent: oklch(80% 0.15 60);
+  --color-accent-foreground: oklch(25% 0.15 260);
+  --color-muted: oklch(90% 0.02 260);
+  --color-muted-foreground: oklch(60% 0.05 260);
+  --color-card: oklch(98% 0.01 260);
+  --color-card-foreground: oklch(25% 0.15 260);
+
+/* from custom */
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+
+  /* Colors */
+  --color-slate-850: #0f172a;
+  --color-slate-150: #e6eef8;
+
+  --color-slate-400-50: rgba(255, 255, 255, 0.03);
+  --color-slate-150-10: rgba(255, 255, 255, 0.06);
+  --color-slate-150-5: rgba(255, 255, 255, 0.02);
+  --color-slate-150-20: rgba(255, 255, 255, 0.1);
+
+  --color-cyan-550: #0ea5a4;
+  --color-violet-650: #7c3aed;
+
+  --color-slate-300-60: #cbd5e193;
+  --color-slate-450: #9fb0c8;
+
+  --color-green-350: #9ee6a3;
+  --color-red-350: #ffb4b4;
+
+  --color-blue-700-98: rgba(30, 41, 59, 0.98);
+  --color-slate-150-15: rgba(255, 255, 255, 0.08);
+}
+
+@layer base {
+  :root {
+    --background: oklch(100% 0 0);
+    --foreground: oklch(25% 0.15 260);
+    --card: oklch(98% 0.01 260);
+    --card-foreground: oklch(25% 0.15 260);
+    --popover: oklch(98% 0.01 260);
+    --popover-foreground: oklch(25% 0.15 260);
+    --primary: oklch(65% 0.2 270);
+    --primary-foreground: oklch(98% 0.01 270);
+    --secondary: oklch(80% 0.1 190);
+    --secondary-foreground: oklch(25% 0.15 260);
+    --muted: oklch(90% 0.02 260);
+    --muted-foreground: oklch(60% 0.05 260);
+    --accent: oklch(80% 0.15 60);
+    --accent-foreground: oklch(25% 0.15 260);
+    --border: oklch(88% 0.03 260);
+    --input: oklch(88% 0.03 260);
+    --ring: oklch(65% 0.2 270);
+  }
+
+  .dark {
+    --background: oklch(15% 0.05 260);
+    --foreground: oklch(90% 0.02 260);
+    --card: oklch(20% 0.05 260);
+    --card-foreground: oklch(90% 0.02 260);
+    --popover: oklch(20% 0.05 260);
+    --popover-foreground: oklch(90% 0.02 260);
+    --primary: oklch(30% 0.05 260);
+    --primary-foreground: oklch(90% 0.02 260);
+    --secondary: oklch(40% 0.06 260);
+    --secondary-foreground: oklch(90% 0.02 260);
+    --muted: oklch(30% 0.04 260);
+    --muted-foreground: oklch(65% 0.05 260);
+    --accent: oklch(75% 0.15 60);
+    --accent-foreground: oklch(90% 0.02 260);
+    --border: oklch(30% 0.04 260);
+    --input: oklch(30% 0.04 260);
+    --ring: oklch(30% 0.05 260);
+  }
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    @apply overflow-x-hidden max-w-full;
+  }
+  html {
+    @apply overflow-x-hidden max-w-full;
+  }
+}
