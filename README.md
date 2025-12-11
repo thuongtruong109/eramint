@@ -1,9 +1,7 @@
-# Next.js 16 Boilerplate
-
 <div align="center">
   <img src="/public/images/og.png" alt="Next.js Boilerplate" width="600px" />
   <p>A production-ready starter template with everything you need to build and deploy high-performance Next.js applications.</p>
-  
+
   [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
   [![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue)](https://www.typescriptlang.org/)
   [![Next.js](https://img.shields.io/badge/Next.js-16.0-black)](https://nextjs.org/)
@@ -50,7 +48,7 @@ This boilerplate is designed to give you a production-ready foundation with ever
 ### Create a new project using this boilerplate
 
 ```bash
-git clone https://github.com/AnwarHossainSR/nextjs-16-template.git
+git clone https://github.com/thuongtruong109/eramint.git
 ```
 
 ### Development
@@ -204,32 +202,6 @@ chore: update dependencies
 - Optimized images with next/image
 - Server-side rendering and static generation
 
-## 🔐 Environment Variables
-
-Create a `.env` file in the root directory:
-
-```env
-# Database
-MONGODB_URI=your_mongodb_connection_string
-
-# Clerk Authentication
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
-CLERK_SECRET_KEY=your_clerk_secret_key
-CLERK_WEBHOOK_SECRET=your_clerk_webhook_secret
-
-# Clerk URLs
-NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
-NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
-NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/dashboard
-NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/dashboard
-
-# NextAuth
-NEXTAUTH_SECRET=your_nextauth_secret
-
-# Environment
-NODE_ENV=development
-```
-
 ## 📝 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
@@ -241,5 +213,5 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ---
 
 <div align="center">
-  <p>Made with ❤️ by <a href="https://github.com/AnwarHossainSR">Anwar Hossain</a></p>
+  <p>Made with ❤️ by <a href="https://github.com/thuongtruong109">Anwar Hossain</a></p>
 </div>

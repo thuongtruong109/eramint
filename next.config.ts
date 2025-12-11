@@ -4,7 +4,7 @@ const nextConfig: NextConfig = {
   experimental: {
     turbopackFileSystemCacheForDev: true,
   },
-  // cacheComponents: true,
+  cacheComponents: true,
   reactCompiler: true,
   // compiler: {
   //   removeConsole: process.env.NODE_ENV === 'production',
