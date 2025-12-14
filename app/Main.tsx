@@ -16,6 +16,8 @@ import {
   NFTFile,
   GitHubConfig,
 } from '@/services/github';
+import { FaGithub } from 'react-icons/fa';
+import LoginBtn from './LoginBtn';
 
 // --- Types ---
 type Tab = 'preview' | 'list';
@@ -79,7 +81,7 @@ export default function NftEditor() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
-    setConfig((prev) => ({ ...prev, [id]: value }));
+    setConfig((prev) => ({ ...prev, [id]: value.trim() }));
   };
 
   const updateStatus = useCallback((message: string, isError: boolean) => {
@@ -293,10 +295,16 @@ export default function NftEditor() {
 
   // List NFTs logic
   const handleListNFTs = async () => {
+    alert('handleListNFTs called');
     const { token, owner, repo, branch, pathPrefix } = config;
     const logEl = logRef.current;
 
-    if (!logEl) return;
+    if (!logEl) {
+      alert('logEl not found');
+      return;
+    }
+
+    alert('Config: token=' + !!token + ', owner=' + owner + ', repo=' + repo);
 
     try {
       if (!token || !owner || !repo) {
@@ -304,6 +312,7 @@ export default function NftEditor() {
         return;
       }
 
+      alert('Proceeding to list NFTs');
       setIsListing(true);
       const gitHubConfig: GitHubConfig = { token, owner, repo, branch };
 
@@ -383,6 +392,7 @@ export default function NftEditor() {
         <div className="flex justify-between items-center mb-5">
           <h2 className="text-2xl font-bold">NFT Editor → GitHub</h2>
           <div className="flex space-x-2">
+            <LoginBtn />
             <button
               className={`tab-button px-4 py-1 rounded-lg transition ${
                 activeTab === 'preview'
@@ -399,7 +409,7 @@ export default function NftEditor() {
                   ? 'bg-slate-150/20'
                   : 'bg-slate-150/5 border border-slate-150/10'
               }`}
-              onClick={() => setActiveTab('list')}
+              onClick={() => { alert('Switching to list tab'); setActiveTab('list'); }}
             >
               List
             </button>
@@ -412,13 +422,22 @@ export default function NftEditor() {
             <label htmlFor="token" className="block mt-2 text-xs text-slate-300/60">
               Token (PAT)
             </label>
-            <input
-              id="token"
-              placeholder="ghp_xxx..."
-              value={config.token}
-              onChange={handleInputChange}
-              className="w-full p-2 mt-1 rounded-lg border border-slate-150/10 bg-slate-150/5 text-inherit box-border outline-none"
-            />
+            <div className="relative mt-1">
+              <button
+                onClick={() => window.open('https://github.com/settings/tokens', '_blank')}
+                className="absolute left-2 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 transition"
+                title="Create GitHub Personal Access Token"
+              >
+                <FaGithub size={20} />
+              </button>
+              <input
+                id="token"
+                placeholder="ghp_xxx..."
+                value={config.token}
+                onChange={handleInputChange}
+                className="w-full pl-10 p-2 rounded-lg border border-slate-150/10 bg-slate-150/5 text-inherit box-border outline-none"
+              />
+            </div>
           </div>
           <div className="flex-1 min-w-0" style={{ flexBasis: '20%' }}>
             <label htmlFor="owner" className="block mt-2 text-xs text-slate-300/60">
@@ -512,7 +531,7 @@ export default function NftEditor() {
                 id="canvas"
                 width={CANVAS_WIDTH}
                 height={CANVAS_HEIGHT}
-                className="block my-3 rounded-lg bg-gradient-to-br from-cyan-550 to-violet-650 max-w-full h-auto"
+                className="block my-3 rounded-lg bg-linear-to-br from-cyan-550 to-violet-650 max-w-full h-auto"
                 style={{
                   maxWidth: '100%',
                   aspectRatio: `${CANVAS_WIDTH} / ${CANVAS_HEIGHT}`,

@@ -1,4 +1,3 @@
-// app/layout.tsx
 import { Inter, Poppins } from 'next/font/google';
 import { Toaster } from 'react-hot-toast';
 
@@ -6,6 +5,7 @@ import { ThemeProvider } from '../providers/theme';
 import '@/styles/globals.css';
 import type { ChildrenProps } from '../types';
 import Header from '@/components/Header';
+import SessionProviderWrapper from '@/providers/Session';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -52,13 +52,16 @@ export default function RootLayout({ children }: ChildrenProps) {
   return (
       <html lang="en" suppressHydrationWarning className="overflow-x-hidden">
         <body
+          suppressHydrationWarning
           className={`${inter.variable} ${poppins.variable} font-sans antialiased overflow-x-hidden`}
         >
-           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <Header />
-                <main className="flex-1 w-full overflow-x-hidden">
-                  {children}
-                </main>
+            <main className="flex-1 w-full overflow-x-hidden">
+              <SessionProviderWrapper>
+              {children}
+              </SessionProviderWrapper>
+            </main>
             <Toaster
               position="bottom-right"
               toastOptions={{
